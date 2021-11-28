@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc57f6aab167ade4b9e5f902e9794f9b, type: 3}
+  m_Name: GroundMaterials
+  m_EditorClassIdentifier: 
+  Frictions:
+  - Material: {fileID: 13400000, guid: 41833a0b67a544a478c3d313df0fe504, type: 2}
+    ForwardStiffness: 1.2
+    SidewaysStiffness: 1.2
+    Slip: 0.275
+    Damp: 0.1
+    Volume: 0.5
+    Particles: {fileID: 0}
+    Sound: {fileID: 0}
+  - Material: {fileID: 13400000, guid: f9a2f738cf1ab574f8dd44feb2921a26, type: 2}
+    ForwardStiffness: 0.8
+    SidewaysStiffness: 0.8
+    Slip: 0.1
+    Damp: 1
+    Volume: 0.5
+    Particles: {fileID: 0}
+    Sound: {fileID: 0}
+  - Material: {fileID: 13400000, guid: 75c410f196fc4ae448a742b0ad72c68c, type: 2}
+    ForwardStiffness: 0.5
+    SidewaysStiffness: 0.1
+    Slip: 0.05
+    Damp: 2
+    Volume: 0.5
+    Particles: {fileID: 0}
+    Sound: {fileID: 0}
+  TerrainFrictions: []
