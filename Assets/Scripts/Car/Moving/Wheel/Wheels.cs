@@ -57,10 +57,9 @@ namespace BloodMeridiane.Car.Moving.Wheel
                     poweredWheel++;
                     averageSpeedWheel += wheel.Speed;
                 }
-                averageSpeedWheel += wheel.Speed;
             }
 
-            return averageSpeedWheel / _wheels.Count;
+            return averageSpeedWheel / poweredWheel;
         }
         #endregion
 

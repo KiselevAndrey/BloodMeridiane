@@ -1,5 +1,4 @@
 using BloodMeridiane.Car.Moving.Wheel;
-using System.Collections;
 using UnityEngine;
 
 namespace BloodMeridiane.Car.Moving
@@ -16,6 +15,8 @@ namespace BloodMeridiane.Car.Moving
         [SerializeField, Min(1)] private float _velocityMultiplier = 3.6f;
         [SerializeField, Range(0, 1)] private float _wheelVelocityMultiplier = 0.374f;
 
+        private ControlWheel _controlWheel;
+
         private float _verticalAxis, _steerAxis;
         private float _calculatedWheelSpeedMultiplier;
         [Tooltip("Колеса буксуют")] private bool _isWheelsSpun;
@@ -23,6 +24,7 @@ namespace BloodMeridiane.Car.Moving
         #region Properties
         public float CalculatedSpeed { get; private set; }
         public float CalculatedWheelSpeed { get; private set; }
+        public float ControlWheelSpeed => _controlWheel.Speed * _velocityMultiplier;
         #endregion
 
         #region Unity
@@ -31,6 +33,7 @@ namespace BloodMeridiane.Car.Moving
             base.Awake();
 
             GearBox = GetComponent<GearBox>();
+            _controlWheel = GetComponentInChildren<ControlWheel>();
 
             Wheels.InitWheels();
             GearBox.InitGearBox(Motor.MaxRPM);

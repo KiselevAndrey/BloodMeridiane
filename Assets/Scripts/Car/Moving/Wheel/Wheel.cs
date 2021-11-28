@@ -9,7 +9,7 @@ namespace BloodMeridiane.Car.Moving.Wheel
 
         public float RPM => Collider.rpm;
 
-        public float Speed => RPM * Collider.radius * Mathf.PI / 60;
+        public float Speed => RPM * Collider.radius * Mathf.PI / 30;
 
         protected virtual void Awake()
         {

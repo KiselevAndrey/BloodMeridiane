@@ -26,7 +26,7 @@ namespace BloodMeridiane.UI
 
         protected virtual void UpdateTexts(CarMoveController car)
         {
-            SpeedText.text = ((int)car.CalculatedWheelSpeed).ToString();
+            SpeedText.text = ((int)car.ControlWheelSpeed).ToString();
             GearText.text = car.GearBox.GearName;
         }
     }
