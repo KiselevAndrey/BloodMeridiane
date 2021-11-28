@@ -1,10 +1,9 @@
 using BloodMeridiane.Map;
 using UnityEngine;
 
-namespace BloodMeridiane.Car.Moving
+namespace BloodMeridiane.Car.Moving.Wheel
 {
-    [RequireComponent(typeof(WheelCollider))]
-    public class WheelController : MonoBehaviour
+    public class WheelController : Wheel
     {
         [SerializeField] private Transform _wheelTransform;
 
@@ -18,7 +17,7 @@ namespace BloodMeridiane.Car.Moving
         [SerializeField] private bool _canBrake;
         [SerializeField, Range(0, 1)] private float _brakeMultiplier = 1f;
 
-        private WheelCollider _collider;
+        private ControlWheel _controlWheel;
         private WheelHit _wheelHit;
 
         private int _groundIndex;
@@ -27,16 +26,16 @@ namespace BloodMeridiane.Car.Moving
         #region Properties
         public bool IsGrounded { get; private set; }
         public bool CanPower => _canPower;
-        public float Speed => _collider.rpm * _collider.radius * Mathf.PI / 60;
-        public float RPM => _collider.rpm;
 
         private GroundMaterials GroundMaterials => GroundMaterials.Instance;
         private GroundMaterials.GroundMaterialFriction[] _physicsFrictions => GroundMaterials.Frictions;
         #endregion
 
-        private void Awake()
+        protected override void Awake()
         {
-            _collider = GetComponent<WheelCollider>();
+            base.Awake();
+
+            _controlWheel = GetComponentInParent<ControlWheel>();
         }
 
         public void Init(float TCSStrength)
@@ -47,18 +46,18 @@ namespace BloodMeridiane.Car.Moving
         public void ApplySteer(float steerInput, float maxAngle)
         {
             if (_canSteer)
-                _collider.steerAngle = steerInput * _steerMultiplier * maxAngle;
+                Collider.steerAngle = steerInput * _steerMultiplier * maxAngle;
         }
 
         public void UpdateParameters()
         {
-            IsGrounded = _collider.GetGroundHit(out _wheelHit);
+            IsGrounded = Collider.GetGroundHit(out _wheelHit);
             _groundIndex = GetGroundMaterialIndex();
         }
 
         public void UpdateVisual()
         {
-            _collider.GetWorldPose(out Vector3 pos, out Quaternion quat);
+            Collider.GetWorldPose(out Vector3 pos, out Quaternion quat);
             _wheelTransform.position = pos;
             _wheelTransform.rotation = quat;
         }
@@ -67,23 +66,27 @@ namespace BloodMeridiane.Car.Moving
         {
             if (_canPower == false) return;
 
+            if (Mathf.Abs(RPM) - Mathf.Abs(_controlWheel.RPM) > 100) 
+                Collider.motorTorque = 0f;
+            else
+                Collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
+
             //print($"torqForce {torqForce}");
 
-            if (Mathf.Abs(_collider.rpm) >= 100)
-            {
-                if (_wheelHit.forwardSlip > _physicsFrictions[_groundIndex].Slip)
-                {
-                    torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, 0f, Mathf.Infinity);
-                    //print($"new -torqForce {torqForce}");
-                }
-                else
-                {
-                    torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, -Mathf.Infinity, 0f);
-                    //print($"new torqForce {torqForce}");
-                }
-            }
+            //if (Mathf.Abs(RPM) >= 100)
+            //{
+            //    if (_wheelHit.forwardSlip > _physicsFrictions[_groundIndex].Slip)
+            //    {
+            //        torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, 0f, Mathf.Infinity);
+            //        //print($"new -torqForce {torqForce}");
+            //    }
+            //    else
+            //    {
+            //        torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, -Mathf.Infinity, 0f);
+            //        //print($"new torqForce {torqForce}");
+            //    }
+            //}
 
-            _collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
         }
 
 

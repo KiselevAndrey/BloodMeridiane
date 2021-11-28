@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace BloodMeridiane.Car.Moving
+namespace BloodMeridiane.Car.Moving.Wheel
 {
     [System.Serializable]
     public class Wheels
