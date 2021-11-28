@@ -38,7 +38,7 @@ namespace BloodMeridiane.Car.Moving
 		public int CurrentGear { get; private set; }
 		public bool Revers { get; private set; }
 		public string GearName { get; private set; }
-		/// <summary> Возвращает 0 или 1 в зависимости от: "переключается ли сейчас передача" и сообношении текущей скорости от максимальной на этой передачи </summary>
+		/// <summary> Возвращает 0 или 1 в зависимости от: "переключается ли сейчас передача" и соотношении текущей скорости от максимальной на этой передачи </summary>
 		public int GearMultiplier => (_isChangingGear == false && Mathf.Abs(_currentSpeed) <= Gear.MaxSpeed).ToInt();
         #endregion
 
@@ -137,8 +137,8 @@ namespace BloodMeridiane.Car.Moving
 
 			CheckGearShiftDown(currentRPM);
 
-			if (CurrentGear == 0 && GearName != nameof(GearNames.N)		// если первая или реверс
-				&& _canSwitchBackToNeutral == false						// и переключиться на нейтралку нельзя
+			if (CurrentGear == 0 && GearName != nameof(GearNames.N)					// если первая или реверс
+				&& _canSwitchBackToNeutral == false									// и переключиться на нейтралку нельзя
 				&& _oldVerticalAxis.ToString()[0] != verticalAxis.ToString()[0])    // первый знак(число) у старой и новой скорости не совпадает
             {
 				StopCoroutine(_switchToNeutralCooldown);
@@ -166,7 +166,7 @@ namespace BloodMeridiane.Car.Moving
 			if (CurrentGear > 0                                                     // если не первая передача
 				&& _currentSpeed < _gears[CurrentGear - 1].TargetSpeedForNextGear   // и скорость меньше скорости переключения пониженной передачи
 				&& Revers == false
-				&& currentRPM <= _gearShiftDownRPM)
+				)//&& currentRPM <= _gearShiftDownRPM)
 			{
 				StartCoroutine(ChangeGear(CurrentGear - 1));
 			}

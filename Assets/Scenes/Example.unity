@@ -20377,13 +20377,13 @@ PrefabInstance:
       propertyPath: _totalGears
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 3490508465602871418, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: Motor._motorForce
-      value: 500
+    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
+      propertyPath: _finalGearRatio
+      value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 3490508465602871418, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: Motor._forcePercentAtMinRpm
-      value: 0.2
+    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
+      propertyPath: _gearShiftingDelay
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3490508465602871423, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
       propertyPath: m_Name

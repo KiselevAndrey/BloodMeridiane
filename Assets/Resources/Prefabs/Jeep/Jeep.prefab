@@ -2786,11 +2786,11 @@ MonoBehaviour:
     _highSpeedSteerAngle: 5
     _TCSStrength: 1
   Motor:
-    _motorForce: 10
+    _motorForce: 100
     _maxRpm: 9000
     _startEngineRpm: 800
     _maxFuelConsumption: 5
-    _engineInertia: 0.15
+    _engineInertia: 0.3
     _forcePercentAtMinRpm: 0.2
     _rpmPercentAtMaxForce: 0.7
     _forcePercentAtMaxRpm: 0.7
