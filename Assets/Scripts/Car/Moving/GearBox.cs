@@ -14,23 +14,21 @@ namespace BloodMeridiane.Car.Moving
 
 		[Header("Gear Shift")]
 		[SerializeField, Range(.25f, 1), Tooltip("На каком соотношении скоростей в передачи АПК попытается переключиться на более высокую передачу")] private float _gearShiftingThreshold = .75f;
-		[SerializeField, Range(0, 5), Tooltip("Время переключения передачи")] private float _gearShiftingDelay = 3.5f;
+		[SerializeField, Range(0, 1), Tooltip("Время переключения передачи")] private float _gearShiftingDelay = 0.5f;
 		[SerializeField, Range(0, 1), Tooltip("Шанс заклинивания при переключении передачи")] private float _chanceOfJamming = 0.1f;
 		[SerializeField, Range(1, 5), Tooltip("Макс увеличение времени переключения при заклинивании")] private float _jammingTimeMultiplied = 3f;
+		[SerializeField, Range(0.5f, 1), Tooltip("Когда переключаться на более высокую передачу")] private float _gearShiftUpRpmPercent = 0.64f;
+		[SerializeField, Range(0, 0.5f), Tooltip("Когда переключаться на более низкую передачу")] private float _gearShiftDownRpmPercent = 0.35f;
 
 		[Header("Neutral Gear")]
 		[SerializeField, Range(0, 5), Tooltip("Граничная скорость нейтральной передачи. Используется для переключения с и на нейтральную скорость")] private float _neutralBorderSpeed = 3f;
-		[SerializeField, Range(0, 5), Tooltip("Время через которое можно опять переключиться на нейтральную передачу. Требуется для слабых моторов, чтобы не перескакивали с первой и реверса на нейтралку и обратно при старте авто")]
-		private float _timeToSwitchToNeutral = 5f;
 
 		private Gear[] _gears;
-		private Coroutine _switchToNeutralCooldown;
 
 		[Tooltip("Переключается сейчас передача?")] private bool _isChangingGear;
-		private float _oldVerticalAxis;
-		private float _currentSpeed;
-		[Tooltip("Можно ли переключиться обратно на нейтральную передачу. Используется после переключения на первую и на реверс")] private bool _canSwitchBackToNeutral;
 		private int _gearShiftUpRPM, _gearShiftDownRPM;
+		private int _maxRPM;
+		private int _currentSpeed;
 
 		#region Properties
 		public int MaxSpeed => _maxSpeed;
@@ -46,7 +44,8 @@ namespace BloodMeridiane.Car.Moving
         public void InitGearBox(int maxRPM)
         {
 			InitGears();
-			CalculateSwitchedRPM(maxRPM);
+			_maxRPM = maxRPM;
+			CalculateSwitchedRPM();
 
 			GearName = nameof(GearNames.N);
 		}
@@ -99,168 +98,141 @@ namespace BloodMeridiane.Car.Moving
 			return gearRatio;
 		}
 
-		public void CalculateSwitchedRPM(int maxRPM)
+		private void CalculateSwitchedRPM()
         {
-			// числа взяты научным методом
-			_gearShiftUpRPM = (int)(maxRPM * .64f);
-			_gearShiftDownRPM = (int)(maxRPM * .35f);
+			_gearShiftUpRPM = (int)(_maxRPM * _gearShiftUpRpmPercent);
+			_gearShiftDownRPM = (int)(_maxRPM * _gearShiftDownRpmPercent);
 		}
+
+        private void OnValidate()
+        {
+			GearName = nameof(GearNames.N);
+			CurrentGear = 0;
+			InitGearBox(_maxRPM);
+        }
         #endregion
 
         #region Check & Change Gear
-        public void CheckGears(float verticalAxis, float currentSpeed, float currentRPM)
+        public void CheckGears(float verticalAxis, int currentSpeed, float currentRPM)
         {
 			if (_isChangingGear == true) return;
 
 			_currentSpeed = currentSpeed;
 
-			// если ускоряемся
-			if (verticalAxis > 0)
-			{
-				CheckGearShiftFirst();
-				CheckGearShiftUp(currentRPM);
-				CheckGearShiftNeutral();
-			}
+			if (ItsYourSpeed(verticalAxis) || ItsYourRPM(currentRPM)) return;
 
-			// если тормозим
-			else if(verticalAxis < 0)
-            {
-				CheckGearShiftReverce();
-				CheckGearShiftNeutral();
-			}
-
-			// если ничего не делаем
-			else
-			{
-				CheckGearShiftNeutral();
-			}
-
-			CheckGearShiftDown(currentRPM);
-
-			if (CurrentGear == 0 && GearName != nameof(GearNames.N)					// если первая или реверс
-				&& _canSwitchBackToNeutral == false									// и переключиться на нейтралку нельзя
-				&& _oldVerticalAxis.ToString()[0] != verticalAxis.ToString()[0])    // первый знак(число) у старой и новой скорости не совпадает
-            {
-				StopCoroutine(_switchToNeutralCooldown);
-				_switchToNeutralCooldown = null;
-				_canSwitchBackToNeutral = true;
-            }				
-
-			_oldVerticalAxis = verticalAxis;
+			if(CalculateCurrentGear(verticalAxis) != GearName)
+				StartCoroutine(ShiftGear(verticalAxis));
         }
 
 		#region Check Gear Shift
-		private void CheckGearShiftUp(float currentRPM)
+		private bool ItsYourSpeed(float verticalAxis) 
 		{
-			if (CurrentGear < _gears.Length - 1                                 // если не макс передача
-				&& _currentSpeed >= _gears[CurrentGear].TargetSpeedForNextGear  // и скорость больше скорости переключения передачи
-				&& Revers == false
-				&& currentRPM >= _gearShiftUpRPM)
+			// проверка макс передачи
+			if (CurrentGear == _gears.Length - 1)
+				return _currentSpeed > _gears[CurrentGear - 1].TargetSpeedForNextGear;
+			// проверка средних передач
+			else if (CurrentGear > 0)
+				return _currentSpeed <= _gears[CurrentGear].TargetSpeedForNextGear && _currentSpeed > _gears[CurrentGear - 1].TargetSpeedForNextGear;
+			// проверка первой и задней передачи
+			else
 			{
-				StartCoroutine(ChangeGear(CurrentGear + 1));
-			}
+				if (verticalAxis > 0 && GearName == "1")
+					return _currentSpeed <= _gears[CurrentGear].TargetSpeedForNextGear;
+				else if(verticalAxis < 0 && GearName == "R")
+					return Mathf.Abs(_currentSpeed) <= _gears[CurrentGear].MaxSpeed;
+            }
+			return false;
 		}
 
-		private void CheckGearShiftDown(float currentRPM)
-		{
-			if (CurrentGear > 0                                                     // если не первая передача
-				&& _currentSpeed < _gears[CurrentGear - 1].TargetSpeedForNextGear   // и скорость меньше скорости переключения пониженной передачи
-				&& Revers == false
-				)//&& currentRPM <= _gearShiftDownRPM)
+		private bool ItsYourRPM(float currentRPM)
+        {
+			// проверка макс передачи
+			if (CurrentGear == _gears.Length - 1)
+				return currentRPM > _gearShiftDownRPM;
+			// проверка средних передач
+			else if (CurrentGear > 0)
+				return currentRPM > _gearShiftDownRPM && currentRPM < _gearShiftUpRPM;
+			// проверка первой и задней передачи
+			else
 			{
-				StartCoroutine(ChangeGear(CurrentGear - 1));
+				if (_currentSpeed > 0 && GearName == "1")
+					return currentRPM > _gearShiftDownRPM && currentRPM < _gearShiftUpRPM;
+				else if(_currentSpeed < 0 && GearName == "R")
+					return currentRPM > _gearShiftDownRPM;
 			}
+			return false;
 		}
 
-		private void CheckGearShiftReverce()
-		{
-			if (CurrentGear == 0 && _currentSpeed < -_neutralBorderSpeed && GearName == nameof(GearNames.N))
-			{
-				StartCoroutine(ChangeGear(-1));     // включаем реверс
-				Revers = true;
-
-				if (_switchToNeutralCooldown == null)
-					_switchToNeutralCooldown = StartCoroutine(SwitchToNeutralCooldown());
-			}
-		}
-
-		private void CheckGearShiftFirst()
-		{
-			if (CurrentGear == 0 && _currentSpeed > _neutralBorderSpeed && GearName == nameof(GearNames.N))
-			{
-				StartCoroutine(ChangeGear(0));     // включаем первую передачу
-
-				if (_switchToNeutralCooldown == null)
-					_switchToNeutralCooldown = StartCoroutine(SwitchToNeutralCooldown());
-			}
-		}
-
-		private void CheckGearShiftNeutral()
-		{
-			if (CurrentGear == 0 
-				&& _canSwitchBackToNeutral
-				&& ((_currentSpeed < _neutralBorderSpeed && GearName == "1")
-				|| (_currentSpeed > -_neutralBorderSpeed && GearName == nameof(GearNames.R))))
-			{
-				SwitchToNeutral();
-				Revers = false;
-			}
-		}
-		#endregion
-
-		/// <summary> Переключение передачи </summary>
-		private IEnumerator ChangeGear(int gear)
+		private IEnumerator ShiftGear(float verticalAxis)
 		{
 			_isChangingGear = true;
+
+			var oldGearName = GearName;
+			var gearShiftingDelay = _gearShiftingDelay * (oldGearName == nameof(GearNames.N) ? 0.5f : 1f);
 
 			SwitchToNeutral();
 
 			if (Random.value > _chanceOfJamming)
-				yield return new WaitForSeconds(_gearShiftingDelay);
+				yield return new WaitForSeconds(gearShiftingDelay);
 			else
 			{
 				// запустить loop звук заклинивания при переключении
 				//print("Заклинило АКПП");
 
-				yield return new WaitForSeconds(_gearShiftingDelay * Random.Range(1,_jammingTimeMultiplied));
+				yield return new WaitForSeconds(gearShiftingDelay * Random.Range(1, _jammingTimeMultiplied));
 
 				// выключить loop звук заклинивания при переключении
 				//print("АКПП отклинило");
 			}
 
-			// вкл звук включения передачи
+			GearName = CalculateCurrentGear(verticalAxis, out int gear);
+			CurrentGear = gear;
 
-			if (gear == -1)
-			{
-				CurrentGear = 0;
-				GearName = nameof(GearNames.R);
-			}
-			else
-			{
-				CurrentGear = gear;
-				GearName = (gear + 1).ToString();
-			}
-
-			//print($"Переключились на {GearName}");
 			_isChangingGear = false;
 		}
+
+		private string CalculateCurrentGear(float verticalAxis, out int gear)
+        {
+			if(Mathf.Abs(_currentSpeed) < _neutralBorderSpeed)
+            {
+				gear = 0;
+				return nameof(GearNames.N);
+            }
+            else {
+				if (verticalAxis < 0)
+				{
+					gear = 0;
+					return nameof(GearNames.R);
+				}
+				else
+				{
+					int gearIndex = 0;
+
+					for (int i = 0; i < _gears.Length; i++)
+					{
+						gearIndex = i;
+						if (_currentSpeed < _gears[i].TargetSpeedForNextGear)
+							break;
+					}
+
+					gear = gearIndex;
+					return (gearIndex + 1).ToString();
+				}
+			}
+        }
+
+		private string CalculateCurrentGear(float verticalAxis) => CalculateCurrentGear(verticalAxis, out int gear);
+		#endregion
 
 		private void SwitchToNeutral()
 		{
 			if (GearName == nameof(GearNames.N)) return;
 
 			GearName = nameof(GearNames.N);
-			// здесь звук переключения на нейтралку
-			//print($"Переключились на N");
-		}
-
-		private IEnumerator SwitchToNeutralCooldown()
-        {
-			_canSwitchBackToNeutral = false;
-			yield return new WaitForSeconds(_timeToSwitchToNeutral);
-			_canSwitchBackToNeutral = true;
-			_switchToNeutralCooldown = null;
-		}
+            // здесь звук переключения на нейтралку
+            //print($"Переключились на N");
+        }
 		#endregion
 	}
 

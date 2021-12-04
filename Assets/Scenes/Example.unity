@@ -15842,8 +15842,11 @@ MonoBehaviour:
   _gearShiftingDelay: 3.5
   _chanceOfJamming: 0.1
   _jammingTimeMultiplied: 3
+  _gearShiftUpRpmPercent: 0.64
+  _gearShiftDownRpmPercent: 0.35
   _neutralBorderSpeed: 3
   _timeToSwitchToNeutral: 5
+  _isChangingGear: 0
 --- !u!114 &629462540
 MonoBehaviour:
   m_ObjectHideFlags: 0

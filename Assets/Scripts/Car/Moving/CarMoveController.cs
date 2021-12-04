@@ -23,7 +23,7 @@ namespace BloodMeridiane.Car.Moving
         #region Properties
         public float CalculatedSpeed { get; private set; }
         public float CalculatedPoweredWheelSpeed { get; private set; }
-        public float ControlWheelSpeed { get; private set; }
+        public int ControlWheelSpeed { get; private set; }
         #endregion
 
         #region Unity
@@ -59,7 +59,7 @@ namespace BloodMeridiane.Car.Moving
             CalculatedSpeed = Rigidbody.velocity.magnitude * _velocityMultiplier;
             Wheels.CalculateWheelSpeed();
             CalculatedPoweredWheelSpeed = Wheels.AveragePoweredSpeed * _velocityMultiplier;
-            ControlWheelSpeed = _controlWheel.Speed * _velocityMultiplier;
+            ControlWheelSpeed = (int)(_controlWheel.Speed * _velocityMultiplier);
         }
 
         private void GearUpdate()
@@ -106,7 +106,6 @@ namespace BloodMeridiane.Car.Moving
             // если знаки противоположные
             if (axisSign != speedSign && Mathf.Abs(axisSign) == Mathf.Abs(speedSign))
             {
-                print("знаки противоположные");
                 _isBreaking = true;
             }
             else
