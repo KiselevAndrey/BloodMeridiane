@@ -8,6 +8,7 @@ namespace BloodMeridiane.Car.Moving
 
         public void ApplyForce(float verticalAxis);
         public void ApplySteer(float horizontalAxis);
+        public void ApplyBreak(float breakAxis);
 
         public void RestCar();
     }

@@ -14,10 +14,14 @@ namespace BloodMeridiane.Car.Moving.Wheel
         [SerializeField, Range(1, 45)] private float _maxSteerAngle = 40f;
         [SerializeField, Range(1, 5)] private float _highSpeedSteerAngle = 5f;
         [SerializeField, Range(.05f, 1f)] private float _TCSStrength = 1f;
+        [SerializeField, Min(0)] private float _breakForce = 1000f;
 
         private List<WheelController> _wheels = new List<WheelController>();
 
-        private float _verticalAxis, _torqForce, _steerAxis, _steerAngle;   // параметры для Update
+        private float _verticalAxis, _torqForce, _steerAxis, _steerAngle, _breakAxis;   // параметры для Update
+
+        public int AverageSpeed { get; private set; }
+        public float AveragePoweredSpeed { get; private set; }
 
         public void InitWheels()
         {
@@ -25,41 +29,45 @@ namespace BloodMeridiane.Car.Moving.Wheel
 
             foreach (var wheel in _wheels)
             {
-                wheel.Init(_TCSStrength);
+                wheel.Init(_TCSStrength, _breakForce);
             }
         }
 
         #region Update
-        public void UpdateWheel()
+        public void UpdateWheelColiders()
         {
             foreach (var wheel in _wheels)
             {
                 wheel.UpdateParameters();
 
                 wheel.ApplyTorqForce(_verticalAxis, _torqForce);
+                wheel.ApplyBreakForce(_breakAxis);
                 wheel.ApplySteer(_steerAxis, _steerAngle);
-
-                UpdateWheelVisual(wheel);
+                
+                wheel.UpdateVisual();
             }
         }
 
-        private void UpdateWheelVisual(WheelController wheel) => wheel.UpdateVisual();
-
-        public float CalculateWheelSpeed()
+        public void CalculateWheelSpeed()
         {
             int poweredWheel = 0;
             float averageSpeedWheel = 0;
+            float averagePoweredSpeedWheel = 0;
 
             foreach (var wheel in _wheels)
             {
+                wheel.CalulateSpeed();
+
                 if (wheel.CanPower)
                 {
                     poweredWheel++;
-                    averageSpeedWheel += wheel.Speed;
+                    averagePoweredSpeedWheel += wheel.Speed;
                 }
+                averageSpeedWheel += wheel.Speed;
             }
 
-            return averageSpeedWheel / poweredWheel;
+            AverageSpeed = (int)(averageSpeedWheel / _wheels.Count);
+            AveragePoweredSpeed = averagePoweredSpeedWheel / poweredWheel;
         }
         #endregion
 
@@ -73,8 +81,10 @@ namespace BloodMeridiane.Car.Moving.Wheel
         public void ApplySteer(float steerAxis, float speed, float maxSpeed)
         {
             _steerAxis = steerAxis;
-            _steerAngle = Mathf.Lerp(_maxSteerAngle, _highSpeedSteerAngle, Mathf.Clamp01(speed / maxSpeed / 2)); ;
+            _steerAngle = Mathf.Lerp(_maxSteerAngle, _highSpeedSteerAngle / 2, Mathf.Clamp01(speed / maxSpeed)); ;
         }
+
+        public void ApplyBreak(float breakAxis) => _breakAxis = breakAxis;
         #endregion
 
         public List<float> GetRPM()

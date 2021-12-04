@@ -1,4 +1,5 @@
 using BloodMeridiane.Car.Moving.Wheel;
+using KAP.Extension;
 using UnityEngine;
 
 namespace BloodMeridiane.Car.Moving
@@ -16,12 +17,12 @@ namespace BloodMeridiane.Car.Moving
 
         private ControlWheel _controlWheel;
 
-        private float _verticalAxis, _steerAxis;
-        [Tooltip("Колеса буксуют")] private bool _isWheelsSpun;
+        public float _verticalAxis, _steerAxis, _breakAxis;
+        private bool _isBreaking;
 
         #region Properties
         public float CalculatedSpeed { get; private set; }
-        public float CalculatedWheelSpeed { get; private set; }
+        public float CalculatedPoweredWheelSpeed { get; private set; }
         public float ControlWheelSpeed { get; private set; }
         #endregion
 
@@ -56,7 +57,8 @@ namespace BloodMeridiane.Car.Moving
         private void CalculateSpeed()
         {
             CalculatedSpeed = Rigidbody.velocity.magnitude * _velocityMultiplier;
-            CalculatedWheelSpeed = Wheels.CalculateWheelSpeed() * _velocityMultiplier;
+            Wheels.CalculateWheelSpeed();
+            CalculatedPoweredWheelSpeed = Wheels.AveragePoweredSpeed * _velocityMultiplier;
             ControlWheelSpeed = _controlWheel.Speed * _velocityMultiplier;
         }
 
@@ -68,27 +70,56 @@ namespace BloodMeridiane.Car.Moving
         private void EngineUpdate()
         {
             if (GearBox.GearName == nameof(GearNames.N)) Motor.CalculateRPM();
-            else Motor.CalculateRPM(Mathf.Abs(CalculatedSpeed) * Motor.MaxRPM / GearBox.Gear.MaxSpeed);
+            else Motor.CalculateRPM(Mathf.Abs(ControlWheelSpeed) * Motor.MaxRPM / GearBox.Gear.MaxSpeed);
         }
 
         private void WheelsUpdate()
         {
             Wheels.ApplySteer(_steerAxis, ControlWheelSpeed, GearBox.MaxSpeed);
 
-            if (_verticalAxis != 0 && _isWheelsSpun == false)
+            if (_verticalAxis != 0)
             {
                 Wheels.ApplyForce(_verticalAxis, Motor.Torq * GearBox.Gear.Ratio * GearBox.GearMultiplier);
             }
             else Wheels.ApplyForce(0, 0);
 
-            Wheels.UpdateWheel();
+            Wheels.ApplyBreak(_isBreaking.ToInt());
+
+            Wheels.UpdateWheelColiders();
         }
         #endregion
 
         #region Inputs
-        public override void ApplyForce(float verticalAxis) => _verticalAxis = Mathf.Clamp(verticalAxis, -1f, 1f);
+        public override void ApplyForce(float verticalAxis)
+        {
+            if (_breakAxis != 0)
+            {
+                _verticalAxis = 0f;
+                return;
+            }
 
+            _verticalAxis = Mathf.Clamp(verticalAxis, -1f, 1f);
+
+            var axisSign = _verticalAxis.Sign();
+            var speedSign = Wheels.AverageSpeed.Sign();
+
+            // если знаки противоположные
+            if (axisSign != speedSign && Mathf.Abs(axisSign) == Mathf.Abs(speedSign))
+            {
+                print("знаки противоположные");
+                _isBreaking = true;
+            }
+            else
+            {
+                _isBreaking = false;
+            }
+        }
         public override void ApplySteer(float steerAxis) => _steerAxis = Mathf.Clamp(steerAxis, -1f, 1f);
+        public override void ApplyBreak(float breakAxis)
+        {
+            _breakAxis = Mathf.Clamp01(breakAxis);
+            _isBreaking = _isBreaking || _breakAxis > 0;
+        }
         #endregion
     }
 }

@@ -19845,7 +19845,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1932302712}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.65, z: -491}
+  m_LocalPosition: {x: 4.95, y: -0.65, z: -491}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 702679874}
@@ -20357,34 +20357,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 825831923176052957, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1732924129799333376, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: _canPower
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1732924129914182424, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: _canPower
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: _maxSpeed
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: _totalGears
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: _finalGearRatio
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: _gearShiftingDelay
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3490508465602871423, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
       propertyPath: m_Name
       value: Jeep
@@ -20431,10 +20403,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3490508465603304543, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3993706739846347208, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

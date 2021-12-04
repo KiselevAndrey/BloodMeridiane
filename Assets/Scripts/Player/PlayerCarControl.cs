@@ -9,6 +9,7 @@ namespace BloodMeridiane.Player.Control
     {
         public const string Horizontal = nameof(Horizontal);
         public const string Vertical = nameof(Vertical);
+        public const string Jump = nameof(Jump);
     }
 
     [RequireComponent(typeof(CameraTarget))]
@@ -27,22 +28,15 @@ namespace BloodMeridiane.Player.Control
         {
             UpdateVerticalInput();
             UpdateSteerInput();
+            UpdateBreakInput();
 
             UpdateButtons();
         }
 
 
-        private void UpdateVerticalInput()
-        {
-            float vertical = Input.GetAxis(InputAxis.Vertical);
-            _car.ApplyForce(vertical);
-        }
-
-        private void UpdateSteerInput()
-        {
-            float horizontal = Input.GetAxis(InputAxis.Horizontal);
-            _car.ApplySteer(horizontal);
-        }
+        private void UpdateVerticalInput() => _car.ApplyForce(Input.GetAxis(InputAxis.Vertical));
+        private void UpdateSteerInput() => _car.ApplySteer(Input.GetAxis(InputAxis.Horizontal));
+        private void UpdateBreakInput() => _car.ApplyBreak(Input.GetAxis(InputAxis.Jump));
 
         private void UpdateButtons()
         {

@@ -17,8 +17,8 @@ namespace BloodMeridiane.Car.Moving
         }
 
         public virtual void ApplyForce(float verticalAxis) { }
-
         public virtual void ApplySteer(float horizontalAxis) { }
+        public virtual void ApplyBreak(float breakAxis) { }
 
         #region Rest
         public void RestCar()

@@ -21,11 +21,17 @@ namespace BloodMeridiane.Car.Moving.Wheel
         private WheelHit _wheelHit;
 
         private int _groundIndex;
-        private float _TCSStrength = 2f;
+        private float _TCSStrength;
+        private float _breakForce;
+        private float _calculatedSpeed;
 
         #region Properties
         public bool IsGrounded { get; private set; }
+        public bool IsBraking { get; private set; }
         public bool CanPower => _canPower;
+        public bool CanBreak=> _canBrake;
+
+        public override float Speed => _calculatedSpeed;
 
         private GroundMaterials GroundMaterials => GroundMaterials.Instance;
         private GroundMaterials.GroundMaterialFriction[] _physicsFrictions => GroundMaterials.Frictions;
@@ -38,9 +44,15 @@ namespace BloodMeridiane.Car.Moving.Wheel
             _controlWheel = GetComponentInParent<ControlWheel>();
         }
 
-        public void Init(float TCSStrength)
+        public void Init(float TCSStrength, float breakForce)
         {
             _TCSStrength = TCSStrength;
+            _breakForce = breakForce;
+        }
+
+        public void CalulateSpeed() 
+        {
+            _calculatedSpeed = base.Speed;
         }
 
         public void ApplySteer(float steerInput, float maxAngle)
@@ -66,29 +78,34 @@ namespace BloodMeridiane.Car.Moving.Wheel
         {
             if (_canPower == false) return;
 
-            if (Mathf.Abs(RPM) - Mathf.Abs(_controlWheel.RPM) > 100) 
+            if (Mathf.Abs(RPM) - Mathf.Abs(_controlWheel.RPM) > 100 && IsGrounded)
                 Collider.motorTorque = 0f;
             else
+            {
+                if (Mathf.Abs(RPM) >= 100)
+                {
+                    if (_wheelHit.forwardSlip > _physicsFrictions[_groundIndex].Slip)
+                    {
+                        torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, 0f, Mathf.Infinity);
+                    }
+                    else
+                    {
+                        torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, -Mathf.Infinity, 0f);
+                    }
+                }
+
                 Collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
-
-            //print($"torqForce {torqForce}");
-
-            //if (Mathf.Abs(RPM) >= 100)
-            //{
-            //    if (_wheelHit.forwardSlip > _physicsFrictions[_groundIndex].Slip)
-            //    {
-            //        torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, 0f, Mathf.Infinity);
-            //        //print($"new -torqForce {torqForce}");
-            //    }
-            //    else
-            //    {
-            //        torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, -Mathf.Infinity, 0f);
-            //        //print($"new torqForce {torqForce}");
-            //    }
-            //}
-
+            }
         }
 
+        public void ApplyBreakForce(float breakMultiplier)
+        {
+            if (CanBreak == false) return;
+
+            Collider.brakeTorque = _breakForce * _brakeMultiplier * breakMultiplier;
+
+            IsBraking = breakMultiplier > 0;
+        }
 
         /// <summary> Выдает индекс косаемого материала </summary>
         private int GetGroundMaterialIndex()

@@ -78,7 +78,7 @@ WheelCollider:
     damper: 500
     targetPosition: 0.5
   m_SuspensionDistance: 0.2
-  m_ForceAppPointDistance: 0
+  m_ForceAppPointDistance: 0.2
   m_Mass: 50
   m_WheelDampingRate: 1
   m_ForwardFriction:
@@ -159,7 +159,7 @@ WheelCollider:
     damper: 500
     targetPosition: 0.5
   m_SuspensionDistance: 0.2
-  m_ForceAppPointDistance: 0
+  m_ForceAppPointDistance: 0.2
   m_Mass: 50
   m_WheelDampingRate: 1
   m_ForwardFriction:
@@ -240,7 +240,7 @@ WheelCollider:
     damper: 500
     targetPosition: 0.5
   m_SuspensionDistance: 0.2
-  m_ForceAppPointDistance: 0
+  m_ForceAppPointDistance: 0.2
   m_Mass: 50
   m_WheelDampingRate: 1
   m_ForwardFriction:
@@ -389,7 +389,7 @@ WheelCollider:
     damper: 500
     targetPosition: 0.5
   m_SuspensionDistance: 0.2
-  m_ForceAppPointDistance: 0
+  m_ForceAppPointDistance: 0.2
   m_Mass: 50
   m_WheelDampingRate: 1
   m_ForwardFriction:
@@ -2700,9 +2700,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3490508465603304543}
   - component: {fileID: 3490508465602871394}
-  - component: {fileID: 3490508465602871396}
   - component: {fileID: 3490508465602871418}
   - component: {fileID: 3490508465602871404}
+  - component: {fileID: 3490508465602871396}
   - component: {fileID: 3490508465602871416}
   - component: {fileID: 3490508465602871398}
   - component: {fileID: 2022411291039394807}
@@ -2743,31 +2743,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e2fc3dc832f2984e87811f33f10dca9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _verticalAxis: 0
+  _speedSign: 0
+  _horizontalAxis: 0
+  _breakAxis: 0
   _speed: 0
   _wheelsSpeed: 0
-  _speedDifference: 0
   _rpm: 0
   _currentTorq: 0
   _gearName: 
   _gear: 0
   _gearRatio: 0
   _targetSpeed: 0
---- !u!54 &3490508465602871396
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3490508465602871423}
-  serializedVersion: 2
-  m_Mass: 1300
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 0
-  m_CollisionDetection: 1
 --- !u!114 &3490508465602871418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2783,14 +2770,15 @@ MonoBehaviour:
   Wheels:
     _wheelsCollidersTransform: {fileID: 1732924130855870829}
     _maxSteerAngle: 40
-    _highSpeedSteerAngle: 5
+    _highSpeedSteerAngle: 1
     _TCSStrength: 1
+    _breakForce: 1000
   Motor:
-    _motorForce: 100
+    _motorForce: 200
     _maxRpm: 9000
     _startEngineRpm: 800
     _maxFuelConsumption: 5
-    _engineInertia: 0.3
+    _engineInertia: 0.2
     _forcePercentAtMinRpm: 0.2
     _rpmPercentAtMaxForce: 0.7
     _forcePercentAtMaxRpm: 0.7
@@ -2802,7 +2790,9 @@ MonoBehaviour:
       m_RotationOrder: 4
   GearBox: {fileID: 0}
   _velocityMultiplier: 3.6
-  _wheelVelocityMultiplier: 0.374
+  _verticalAxis: 0
+  _steerAxis: 0
+  _breakAxis: 0
 --- !u!114 &3490508465602871404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2824,6 +2814,22 @@ MonoBehaviour:
   _jammingTimeMultiplied: 3.73
   _neutralBorderSpeed: 0.01
   _timeToSwitchToNeutral: 5
+--- !u!54 &3490508465602871396
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3490508465602871423}
+  serializedVersion: 2
+  m_Mass: 500
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!114 &3490508465602871416
 MonoBehaviour:
   m_ObjectHideFlags: 0
