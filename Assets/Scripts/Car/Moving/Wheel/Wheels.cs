@@ -22,6 +22,7 @@ namespace BloodMeridiane.Car.Moving.Wheel
 
         public int AverageSpeed { get; private set; }
         public float AveragePoweredSpeed { get; private set; }
+        public bool IsBreaking { get; private set; }
 
         public void InitWheels()
         {
@@ -48,26 +49,37 @@ namespace BloodMeridiane.Car.Moving.Wheel
             }
         }
 
-        public void CalculateWheelSpeed()
+        public void CalculateWheelsParameters()
         {
-            int poweredWheel = 0;
-            float averageSpeedWheel = 0;
-            float averagePoweredSpeedWheel = 0;
+            int poweredWheels = 0;
+            float averageWheelSpeed = 0;
+            float averagePoweredWheelSpeed = 0;
+            int breakingWheels = 0;
+            int allBreakingWheels = 0;
 
             foreach (var wheel in _wheels)
             {
                 wheel.CalulateSpeed();
 
+                averageWheelSpeed += wheel.Speed;
+
                 if (wheel.CanPower)
                 {
-                    poweredWheel++;
-                    averagePoweredSpeedWheel += wheel.Speed;
+                    poweredWheels++;
+                    averagePoweredWheelSpeed += wheel.Speed;
                 }
-                averageSpeedWheel += wheel.Speed;
+
+                if (wheel.CanBreak)
+                {
+                    allBreakingWheels++;
+                    if (wheel.IsBraking)
+                        breakingWheels++;
+                }
             }
 
-            AverageSpeed = (int)(averageSpeedWheel / _wheels.Count);
-            AveragePoweredSpeed = averagePoweredSpeedWheel / poweredWheel;
+            AverageSpeed = (int)(averageWheelSpeed / _wheels.Count);
+            AveragePoweredSpeed = averagePoweredWheelSpeed / poweredWheels;
+            IsBreaking = breakingWheels > allBreakingWheels / 2;
         }
         #endregion
 

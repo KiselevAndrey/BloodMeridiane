@@ -8,7 +8,7 @@ namespace BloodMeridiane.Car.Moving
 
 	public class GearBox : MonoBehaviour
 	{
-		[SerializeField, Range(1, 8)] private int _totalGears = 4;
+		[SerializeField, Range(2, 8)] private int _totalGears = 4;
 		[SerializeField, Min (1)] private int _maxSpeed = 50;
 		[SerializeField, Min(1)] private float _finalGearRatio = 3.23f;
 

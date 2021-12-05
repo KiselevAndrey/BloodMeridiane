@@ -5,6 +5,7 @@ using UnityEngine;
 namespace BloodMeridiane.Car.Moving
 {
     [RequireComponent(typeof(GearBox))]
+    [RequireComponent(typeof(Lights))]
     public class CarMoveController : SimpleCarMoveController,
         ICarMoveController
     {
@@ -16,6 +17,7 @@ namespace BloodMeridiane.Car.Moving
         [SerializeField, Min(1)] private float _velocityMultiplier = 3.6f;
 
         private ControlWheel _controlWheel;
+        private Lights _lights;
 
         public float _verticalAxis, _steerAxis, _breakAxis;
         private bool _isBreaking;
@@ -33,6 +35,7 @@ namespace BloodMeridiane.Car.Moving
 
             GearBox = GetComponent<GearBox>();
             _controlWheel = GetComponentInChildren<ControlWheel>();
+            _lights = GetComponent<Lights>();
 
             Wheels.InitWheels();
             GearBox.InitGearBox(Motor.MaxRPM);
@@ -45,11 +48,13 @@ namespace BloodMeridiane.Car.Moving
 
         private void FixedUpdate()
         {
+            Wheels.CalculateWheelsParameters();
             CalculateSpeed();
 
             GearUpdate();
             EngineUpdate();
             WheelsUpdate();
+            LightsUpdate();
         }
         #endregion
 
@@ -57,7 +62,6 @@ namespace BloodMeridiane.Car.Moving
         private void CalculateSpeed()
         {
             CalculatedSpeed = Rigidbody.velocity.magnitude * _velocityMultiplier;
-            Wheels.CalculateWheelSpeed();
             CalculatedPoweredWheelSpeed = Wheels.AveragePoweredSpeed * _velocityMultiplier;
             ControlWheelSpeed = (int)(_controlWheel.Speed * _velocityMultiplier);
         }
@@ -87,6 +91,12 @@ namespace BloodMeridiane.Car.Moving
 
             Wheels.UpdateWheelColiders();
         }
+
+        private void LightsUpdate()
+        {
+            _lights.EnableBreakLights(Wheels.IsBreaking);
+            _lights.EnableReverceLigths(GearBox.GearName == GearNames.R.ToString());
+        }
         #endregion
 
         #region Inputs
@@ -101,7 +111,7 @@ namespace BloodMeridiane.Car.Moving
             _verticalAxis = Mathf.Clamp(verticalAxis, -1f, 1f);
 
             var axisSign = _verticalAxis.Sign();
-            var speedSign = Wheels.AverageSpeed.Sign();
+            var speedSign = ControlWheelSpeed.Sign();
 
             // если знаки противоположные
             if (axisSign != speedSign && Mathf.Abs(axisSign) == Mathf.Abs(speedSign))

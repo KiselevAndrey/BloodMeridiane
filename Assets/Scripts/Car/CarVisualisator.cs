@@ -13,7 +13,7 @@ namespace BloodMeridiane.Car
         [SerializeField] private float _breakAxis;
         [Space()]
         [SerializeField] private float _speed;
-        [SerializeField] private float _wheelsSpeed;
+        [SerializeField] private float _averageSpeed;
         //[SerializeField] private float _speedDifference;
         [Header("Motor")]
         [SerializeField] private int _rpm;
@@ -34,7 +34,7 @@ namespace BloodMeridiane.Car
         private void Update()
         {
             _speed = _car.CalculatedSpeed;
-            _wheelsSpeed = _car.Wheels.AverageSpeed;
+            _averageSpeed = _car.ControlWheelSpeed;
             _rpm = (int)_car.Motor.RPM;
             _currentTorq = _car.Motor.Torq;
             _gear = _car.GearBox.CurrentGear;
@@ -46,7 +46,7 @@ namespace BloodMeridiane.Car
             _verticalAxis = _car._verticalAxis.Sign();
             _horizontalAxis = _car._steerAxis;
             _breakAxis = _car._breakAxis;
-            _speedSign = _wheelsSpeed.Sign();
+            _speedSign = _averageSpeed.Sign();
         }
     }
 }
