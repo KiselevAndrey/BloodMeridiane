@@ -20358,6 +20358,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
+      propertyPath: _maxSpeed
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 3490508465602871404, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
+      propertyPath: _gearShiftingDelay
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3490508465602871418, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
+      propertyPath: Wheels._highSpeedSteerAngle
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 3490508465602871423, guid: 89109c96d9e078846855e0b9677e3ca5, type: 3}
       propertyPath: m_Name
       value: Jeep

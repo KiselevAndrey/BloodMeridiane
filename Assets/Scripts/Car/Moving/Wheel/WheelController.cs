@@ -78,22 +78,28 @@ namespace BloodMeridiane.Car.Moving.Wheel
         {
             if (_canPower == false) return;
 
-            if (Mathf.Abs(RPM) - Mathf.Abs(_controlWheel.RPM) > 100 && IsGrounded)
-                Collider.motorTorque = 0f;
+            if (IsGrounded)
+            {
+                if (Mathf.Abs(RPM) - Mathf.Abs(_controlWheel.RPM) > 100)
+                    Collider.motorTorque = 0f;
+                else
+                {
+                    if (Mathf.Abs(RPM) >= 100)
+                    {
+                        if (_wheelHit.forwardSlip > _physicsFrictions[_groundIndex].Slip)
+                        {
+                            torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, 0f, Mathf.Infinity);
+                        }
+                        else
+                        {
+                            torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, -Mathf.Infinity, 0f);
+                        }
+                    }
+                    Collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
+                }
+            }
             else
             {
-                if (Mathf.Abs(RPM) >= 100)
-                {
-                    if (_wheelHit.forwardSlip > _physicsFrictions[_groundIndex].Slip)
-                    {
-                        torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, 0f, Mathf.Infinity);
-                    }
-                    else
-                    {
-                        torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, -Mathf.Infinity, 0f);
-                    }
-                }
-
                 Collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
             }
         }

@@ -139,7 +139,7 @@ namespace BloodMeridiane.Car.Moving
 			{
 				if (verticalAxis > 0 && GearName == "1")
 					return _currentSpeed <= _gears[CurrentGear].TargetSpeedForNextGear;
-				else if(verticalAxis < 0 && GearName == "R")
+				else if ((_currentSpeed < 0 || verticalAxis < 0) && GearName == "R")
 					return Mathf.Abs(_currentSpeed) <= _gears[CurrentGear].MaxSpeed;
             }
 			return false;

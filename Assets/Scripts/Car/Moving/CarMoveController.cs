@@ -74,7 +74,7 @@ namespace BloodMeridiane.Car.Moving
         private void EngineUpdate()
         {
             if (GearBox.GearName == nameof(GearNames.N)) Motor.CalculateRPM();
-            else Motor.CalculateRPM(Mathf.Abs(ControlWheelSpeed) * Motor.MaxRPM / GearBox.Gear.MaxSpeed);
+            else Motor.CalculateRPM(Mathf.Abs(CalculatedPoweredWheelSpeed) * Motor.MaxRPM / GearBox.Gear.MaxSpeed);
         }
 
         private void WheelsUpdate()

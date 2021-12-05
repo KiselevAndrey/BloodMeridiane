@@ -3525,7 +3525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83277ed654fdfeb46a134ba7861cc017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _totalGears: 8
+  _totalGears: 5
   _maxSpeed: 100
   _finalGearRatio: 3.23
   _gearShiftingThreshold: 0.75
