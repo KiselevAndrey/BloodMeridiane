@@ -2,19 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace BloodMeridiane.Car.Moving.Wheel
+namespace BloodMeridiane.Car.Moving.Wheels
 {
     [System.Serializable]
     public class Wheels
     {
         [Header("References")]
         [SerializeField] private Transform _wheelsCollidersTransform;
+        [SerializeField] private WheelsSO _wheelsSO;
 
         [Header("Parameters")]
         [SerializeField, Range(1, 45)] private float _maxSteerAngle = 40f;
         [SerializeField, Range(1, 5)] private float _highSpeedSteerAngle = 5f;
-        [SerializeField, Range(.05f, 1f)] private float _TCSStrength = 1f;
-        [SerializeField, Min(0)] private float _breakForce = 1000f;
 
         private List<WheelController> _wheels = new List<WheelController>();
 
@@ -30,7 +29,7 @@ namespace BloodMeridiane.Car.Moving.Wheel
 
             foreach (var wheel in _wheels)
             {
-                wheel.Init(_TCSStrength, _breakForce);
+                wheel.Init(_wheelsSO);
             }
         }
 

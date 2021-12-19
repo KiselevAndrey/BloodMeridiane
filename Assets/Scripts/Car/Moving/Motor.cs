@@ -12,8 +12,8 @@ namespace BloodMeridiane.Car.Moving
         [SerializeField, Range(.02f, .4f), Tooltip("Engine inertia. Engine reacts faster on lower values.\nИнерция двигателя. Двигатель быстрее реагирует на более низкие значения.")] private float _engineInertia = .15f;
 
         [Header("TorqueCurve Parameters")]
-        [SerializeField, Range(0, 0.5f)] private float _forcePercentAtMinRpm = 0.2f;
-        [SerializeField, Range(0, 1f)] private float _rpmPercentAtMaxForce = 0.7f;
+        [SerializeField, Range(0.1f, 0.5f)] private float _forcePercentAtMinRpm = 0.2f;
+        [SerializeField, Range(0.1f, 0.95f)] private float _rpmPercentAtMaxForce = 0.7f;
         [SerializeField, Range(0.5f, 1f)] private float _forcePercentAtMaxRpm= 0.7f;
 
 
@@ -42,6 +42,7 @@ namespace BloodMeridiane.Car.Moving
             _engineTorqueCurve.AddKey(0f, _motorForce * _forcePercentAtMinRpm);          // First index of the curve.
             _engineTorqueCurve.AddKey(_maxRpm * _rpmPercentAtMaxForce, _motorForce);     // Second index of the curve at max.
             _engineTorqueCurve.AddKey(_maxRpm, _motorForce * _forcePercentAtMaxRpm);     // Last index of the curve at maximum RPM.
+            //_engineTorqueCurve.AddKey(_maxRpm, _motorForce * _forcePercentAtMaxRpm / 3);
         }
 
         private void CreateFuelConsumptionCurve()

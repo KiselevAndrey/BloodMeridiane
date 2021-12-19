@@ -37,7 +37,12 @@ namespace BloodMeridiane.Car.Moving
 		public bool Revers { get; private set; }
 		public string GearName { get; private set; }
 		/// <summary> Возвращает 0 или 1 в зависимости от: "переключается ли сейчас передача" и соотношении текущей скорости от максимальной на этой передачи </summary>
-		public int GearMultiplier => (_isChangingGear == false && Mathf.Abs(_currentSpeed) <= Gear.MaxSpeed).ToInt();
+		//public int GearMultiplier => (_isChangingGear == false).ToInt();
+		//public int GearMultiplier => (_isChangingGear == false && Mathf.Abs(_currentSpeed) <= Gear.MaxSpeed).ToInt();
+		public float GearMultiplier => (_isChangingGear == false).ToInt() 
+			- Mathf.Clamp01(Mathf.Abs(_currentSpeed) > Gear.MaxSpeed
+			? Mathf.Abs((Gear.MaxSpeed - Mathf.Abs(_currentSpeed)) * 0.1f)
+			: 0);
         #endregion
 
         #region Init

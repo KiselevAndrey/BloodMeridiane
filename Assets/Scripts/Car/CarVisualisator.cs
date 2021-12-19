@@ -12,8 +12,8 @@ namespace BloodMeridiane.Car
         [SerializeField] private float _horizontalAxis;
         [SerializeField] private float _breakAxis;
         [Space()]
-        [SerializeField] private float _speed;
-        [SerializeField] private float _averageSpeed;
+        [SerializeField] private float _calculatedSpeed;
+        [SerializeField] private float _controlWheelSpeed;
         //[SerializeField] private float _speedDifference;
         [Header("Motor")]
         [SerializeField] private int _rpm;
@@ -23,6 +23,7 @@ namespace BloodMeridiane.Car
         [SerializeField] private int _gear;
         [SerializeField] private float _gearRatio;
         [SerializeField] private float _targetSpeed;
+        [SerializeField] private float _gearBoxMultiplier;
 
         private CarMoveController _car;
 
@@ -33,8 +34,8 @@ namespace BloodMeridiane.Car
 
         private void Update()
         {
-            _speed = _car.CalculatedSpeed;
-            _averageSpeed = _car.ControlWheelSpeed;
+            _calculatedSpeed = _car.CalculatedSpeed;
+            _controlWheelSpeed = _car.ControlWheelSpeed;
             _rpm = (int)_car.Motor.RPM;
             _currentTorq = _car.Motor.Torq;
             _gear = _car.GearBox.CurrentGear;
@@ -44,9 +45,11 @@ namespace BloodMeridiane.Car
             //_speedDifference = Mathf.Clamp((Mathf.Abs(_wheelsSpeed) - _speed) / _speed, 0, 0.9f);
 
             _verticalAxis = _car._verticalAxis.Sign();
+            _speedSign = _controlWheelSpeed.Sign();
             _horizontalAxis = _car._steerAxis;
             _breakAxis = _car._breakAxis;
-            _speedSign = _averageSpeed.Sign();
+
+            _gearBoxMultiplier = _car.GearBox.GearMultiplier;
         }
     }
 }

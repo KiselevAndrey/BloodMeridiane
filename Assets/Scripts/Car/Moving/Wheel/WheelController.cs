@@ -1,11 +1,11 @@
 using BloodMeridiane.Map;
 using UnityEngine;
 
-namespace BloodMeridiane.Car.Moving.Wheel
+namespace BloodMeridiane.Car.Moving.Wheels
 {
     public class WheelController : Wheel
     {
-        [SerializeField] private Transform _wheelTransform;
+        [SerializeField] private WheelHolder _wheelHolder;
 
         [Space()]
         [SerializeField] private bool _canPower;
@@ -19,10 +19,9 @@ namespace BloodMeridiane.Car.Moving.Wheel
 
         private ControlWheel _controlWheel;
         private WheelHit _wheelHit;
+        private WheelsSO _wheelsSO;
+        private GroundMaterial _groundMaterial;
 
-        private int _groundIndex;
-        private float _TCSStrength;
-        private float _breakForce;
         private float _calculatedSpeed;
 
         #region Properties
@@ -33,8 +32,8 @@ namespace BloodMeridiane.Car.Moving.Wheel
 
         public override float Speed => _calculatedSpeed;
 
-        private GroundMaterials GroundMaterials => GroundMaterials.Instance;
-        private GroundMaterials.GroundMaterialFriction[] _physicsFrictions => GroundMaterials.Frictions;
+        //private MapGroundMaterials GroundMaterials => MapGroundMaterials.Instance;
+        //private MapGroundMaterials.GroundMaterialFriction[] _physicsFrictions => GroundMaterials.Frictions;
         #endregion
 
         protected override void Awake()
@@ -44,10 +43,17 @@ namespace BloodMeridiane.Car.Moving.Wheel
             _controlWheel = GetComponentInParent<ControlWheel>();
         }
 
-        public void Init(float TCSStrength, float breakForce)
+        public void Init(WheelsSO wheelsSO)
         {
-            _TCSStrength = TCSStrength;
-            _breakForce = breakForce;
+            _wheelsSO = wheelsSO;
+
+            if (Collider != null)
+            {
+                Collider.radius = _wheelsSO.Radius;
+                Collider.mass = _wheelsSO.Mass;
+            }
+
+            _wheelHolder.InitWheel(_wheelsSO.WheelObject);
         }
 
         public void CalulateSpeed() 
@@ -55,52 +61,74 @@ namespace BloodMeridiane.Car.Moving.Wheel
             _calculatedSpeed = base.Speed;
         }
 
+        #region Update
+        public void UpdateParameters()
+        {
+            IsGrounded = Collider.GetGroundHit(out _wheelHit);
+
+            if (IsGrounded)
+            {
+                var groundMaterial = GetGroundMaterial();
+                if (_groundMaterial != groundMaterial)
+                    SetNewGroundMaterial(groundMaterial);
+            }
+        }
+
+        public void UpdateVisual()
+        {
+            Collider.GetWorldPose(out Vector3 pos, out Quaternion quat);
+            _wheelHolder.transform.position = pos;
+            _wheelHolder.transform.rotation = quat;
+
+            UpdateSlipVisual();
+            UpdateMoveVisual();
+        }
+
+        private void UpdateSlipVisual()
+        {
+        }
+
+        private void UpdateMoveVisual()
+        {
+        }
+        #endregion
+
+        #region Apply
         public void ApplySteer(float steerInput, float maxAngle)
         {
             if (_canSteer)
                 Collider.steerAngle = steerInput * _steerMultiplier * maxAngle;
         }
 
-        public void UpdateParameters()
-        {
-            IsGrounded = Collider.GetGroundHit(out _wheelHit);
-            _groundIndex = GetGroundMaterialIndex();
-        }
-
-        public void UpdateVisual()
-        {
-            Collider.GetWorldPose(out Vector3 pos, out Quaternion quat);
-            _wheelTransform.position = pos;
-            _wheelTransform.rotation = quat;
-        }
-
         public void ApplyTorqForce(float verticalAxis, float torqForce)
         {
             if (_canPower == false) return;
 
+            //Collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
+
             if (IsGrounded)
             {
-                if (Mathf.Abs(RPM) - Mathf.Abs(_controlWheel.RPM) > 100)
-                    Collider.motorTorque = 0f;
-                else
-                {
-                    if (Mathf.Abs(RPM) >= 100)
+                //if (Mathf.Abs(RPM) - Mathf.Abs(_controlWheel.RPM) > 100)
+                //    Collider.motorTorque = 0f;
+                //else
+                //{
+                    if (Mathf.Abs(RPM) >= 100 && _groundMaterial != null)
                     {
-                        if (_wheelHit.forwardSlip > _physicsFrictions[_groundIndex].Slip)
+                        if (_wheelHit.forwardSlip > _groundMaterial.ForwardSlip)
                         {
-                            torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, 0f, Mathf.Infinity);
+                            torqForce -= Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _wheelsSO.TCSStrength, 0f, Mathf.Infinity);
                         }
                         else
                         {
-                            torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _TCSStrength, -Mathf.Infinity, 0f);
+                            torqForce += Mathf.Clamp(torqForce * _wheelHit.forwardSlip * _wheelsSO.TCSStrength, -Mathf.Infinity, 0f);
                         }
                     }
                     Collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
-                }
+                //}
             }
             else
             {
-                Collider.motorTorque = verticalAxis * torqForce * _powerMultiplier;
+                Collider.motorTorque = verticalAxis* torqForce * _powerMultiplier;
             }
         }
 
@@ -108,79 +136,32 @@ namespace BloodMeridiane.Car.Moving.Wheel
         {
             if (CanBreak == false) return;
 
-            Collider.brakeTorque = _breakForce * _brakeMultiplier * breakMultiplier;
+            Collider.brakeTorque = _wheelsSO.BreakForce * _brakeMultiplier * breakMultiplier;
 
             IsBraking = breakMultiplier > 0;
         }
+        #endregion
 
-        /// <summary> Выдает индекс косаемого материала </summary>
-        private int GetGroundMaterialIndex()
+        #region GroundMaterial
+        private void SetNewGroundMaterial(GroundMaterial newGroundMaterial)
         {
-            //Уже связывался с каким-либо физическим материалом из Configurable Ground Materials?
-            //bool contacted = false;
+            _groundMaterial = newGroundMaterial;
 
-            if (_wheelHit.point == Vector3.zero)
-                return 0;
+            var forwardFriction = Collider.forwardFriction;
+            forwardFriction.stiffness = _groundMaterial.ForwardStiffness;
+            Collider.forwardFriction = forwardFriction;
 
-            int result = 0;
-
-            for (int i = 0; i < _physicsFrictions.Length; i++)
-            {
-                if (_wheelHit.collider.sharedMaterial == _physicsFrictions[i].PhysicsMaterial)
-                {
-                    //contacted = true;
-                    result = i;
-                    break;
-                }
-            }
-
-            #region Пока с Terrain data не работаю
-            // Если physic material не является грунтовым, то надо проверить может быть мы на terrain collider
-            //if (contacted == false)
-            //{
-            //    for (int i = 0; i < GroundMaterials.TerrainFrictions.Length; i++)
-            //    {
-            //        if (_wheelHit.collider.sharedMaterial == GroundMaterials.TerrainFrictions[i].PhysicsMaterial)
-            //        {
-            //            Vector3 playerPos = transform.position;
-            //            Vector3 TerrainCord = ConvertToSplatMapCoordinate(playerPos);
-            //            float comp = 0f;
-
-            //            for (int k = 0; k < mNumTextures; k++)
-            //            {
-
-            //                if (comp < mSplatmapData[(int)TerrainCord.z, (int)TerrainCord.x, k])
-            //                    result = k;
-
-            //            }
-
-            //            result = RCCGroundMaterialsInstance.terrainFrictions[i].splatmapIndexes[result].index;
-            //            break;
-
-            //        }
-
-            //    }
-
-            //}
-            #endregion
-
-            return result;
+            var sidewaysFriction = Collider.sidewaysFriction;
+            sidewaysFriction.stiffness = _groundMaterial.SidewaysStiffness;
+            Collider.sidewaysFriction = sidewaysFriction;
         }
 
-        #region Обработка Terrain
-        /// <summary>
-        /// Converts to splat map coordinate.
-        /// </summary>
-        /// <returns>The to splat map coordinate.</returns>
-        /// <param name="playerPos">Player position.</param>
-        private Vector3 ConvertToSplatMapCoordinate(Vector3 playerPos)
+        private GroundMaterial GetGroundMaterial()
         {
-            Vector3 vecRet = new Vector3();
-            Terrain ter = Terrain.activeTerrain;
-            Vector3 terPosition = ter.transform.position;
-            vecRet.x = ((playerPos.x - terPosition.x) / ter.terrainData.size.x) * ter.terrainData.alphamapWidth;
-            vecRet.z = ((playerPos.z - terPosition.z) / ter.terrainData.size.z) * ter.terrainData.alphamapHeight;
-            return vecRet;
+            if (_wheelHit.point == Vector3.zero)
+                return null;
+
+            return _wheelsSO.GroundMaterials.GetMaterial(_wheelHit.collider.sharedMaterial);
         }
         #endregion
     }

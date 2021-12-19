@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BloodMeridiane.Car.Moving.Wheel
+namespace BloodMeridiane.Car.Moving.Wheels
 {
     [RequireComponent(typeof(WheelCollider))]
     public class Wheel : MonoBehaviour, IWheel

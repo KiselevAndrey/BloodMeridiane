@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace BloodMeridiane.Car.Moving.Wheels
 {
-    public interface IWheel 
+    public class SlipVisualHandler : MonoBehaviour
     {
-        public float RPM { get; }
+        public void InitSlipObject(GameObject slipObject)
+        {
 
-        public float Speed { get; }
+        }
     }
 }

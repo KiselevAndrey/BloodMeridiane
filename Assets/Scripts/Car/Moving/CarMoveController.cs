@@ -1,4 +1,4 @@
-using BloodMeridiane.Car.Moving.Wheel;
+using BloodMeridiane.Car.Moving.Wheels;
 using KAP.Extension;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace BloodMeridiane.Car.Moving
     public class CarMoveController : SimpleCarMoveController,
         ICarMoveController
     {
-        [SerializeField] public Wheels Wheels;
+        [SerializeField] public Wheels.Wheels Wheels;
         [Space(), SerializeField] public Motor Motor;
         [HideInInspector] public GearBox GearBox;
 
@@ -36,14 +36,12 @@ namespace BloodMeridiane.Car.Moving
             GearBox = GetComponent<GearBox>();
             _controlWheel = GetComponentInChildren<ControlWheel>();
             _lights = GetComponent<Lights>();
-
-            Wheels.InitWheels();
-            GearBox.InitGearBox(Motor.MaxRPM);
         }
 
         private void Start()
         {
-            Motor.CreateMotorCurves();
+            OnChangedParameters();
+            Wheels.InitWheels();
         }
 
         private void FixedUpdate()
@@ -55,6 +53,17 @@ namespace BloodMeridiane.Car.Moving
             EngineUpdate();
             WheelsUpdate();
             LightsUpdate();
+        }
+
+        private void OnValidate()
+        {
+            Invoke(nameof(OnChangedParameters), Time.deltaTime);
+        }
+
+        private void OnChangedParameters()
+        {
+            Motor.CreateMotorCurves();
+            GearBox.InitGearBox(Motor.MaxRPM);
         }
         #endregion
 
