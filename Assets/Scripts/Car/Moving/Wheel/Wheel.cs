@@ -3,7 +3,7 @@ using UnityEngine;
 namespace BloodMeridiane.Car.Moving.Wheels
 {
     [RequireComponent(typeof(WheelCollider))]
-    public class Wheel : MonoBehaviour, IWheel
+    public abstract class Wheel : MonoBehaviour, IWheel
     {
         protected WheelCollider Collider;
 
@@ -15,5 +15,7 @@ namespace BloodMeridiane.Car.Moving.Wheels
         {
             Collider = GetComponent<WheelCollider>();
         }
+
+        protected void Print(string str) => print($"{str}. {transform.name}");
     }
 }

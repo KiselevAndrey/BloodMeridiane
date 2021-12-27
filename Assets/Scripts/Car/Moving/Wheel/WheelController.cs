@@ -1,4 +1,5 @@
 using BloodMeridiane.Map;
+using KAP.Extension;
 using UnityEngine;
 
 namespace BloodMeridiane.Car.Moving.Wheels
@@ -21,6 +22,7 @@ namespace BloodMeridiane.Car.Moving.Wheels
         private WheelHit _wheelHit;
         private WheelsSO _wheelsSO;
         private GroundMaterial _groundMaterial;
+        private SlipVisualHandler _slipHandler;
 
         private float _calculatedSpeed;
 
@@ -86,6 +88,8 @@ namespace BloodMeridiane.Car.Moving.Wheels
 
         private void UpdateSlipVisual()
         {
+            _slipHandler.transform.position = _wheelHit.point;
+            _slipHandler.SetPower(Mathf.Max(Mathf.Abs(_wheelHit.forwardSlip) - _groundMaterial.ForwardSlip, Mathf.Abs(_wheelHit.sidewaysSlip) - _groundMaterial.SidewaysSlip) * IsGrounded.ToInt());
         }
 
         private void UpdateMoveVisual()
@@ -154,6 +158,15 @@ namespace BloodMeridiane.Car.Moving.Wheels
             var sidewaysFriction = Collider.sidewaysFriction;
             sidewaysFriction.stiffness = _groundMaterial.SidewaysStiffness;
             Collider.sidewaysFriction = sidewaysFriction;
+
+            if (_slipHandler != null)
+                Destroy(_slipHandler.gameObject);
+
+            if (_groundMaterial.SlipParticles)
+            {
+                _slipHandler = Instantiate(_groundMaterial.SlipParticles, transform).GetComponent<SlipVisualHandler>();
+                _slipHandler.SetPower(0);
+            }
         }
 
         private GroundMaterial GetGroundMaterial()

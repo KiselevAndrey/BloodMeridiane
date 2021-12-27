@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4895253803657671927}
   - component: {fileID: 4895253803657671920}
   - component: {fileID: 4895253803657671921}
+  - component: {fileID: 186636660786958876}
+  - component: {fileID: 4269360286341673376}
   m_Layer: 0
   m_Name: WheelSlipAsphalt
   m_TagString: Untagged
@@ -26,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4895253803657671922}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.73, y: 0, z: -0.458}
+  m_LocalPosition: {x: -0.03, y: 0, z: -0.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -248,8 +250,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
-      minScalar: 1
+      scalar: 1
+      minScalar: 0.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -757,7 +759,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 20
+      scalar: 80
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1203,7 +1205,7 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 45875
+        atime1: 39321
         atime2: 65535
         atime3: 65535
         atime4: 65535
@@ -4690,3 +4692,30 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &186636660786958876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4895253803657671922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b04f19c934abd524488e224f01440f61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _power: 0
+--- !u!114 &4269360286341673376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4895253803657671922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdf17db5cb936644d81996728af334f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _minParticleEmission: 0
+  _maxParticleEmission: 20

@@ -15,11 +15,13 @@ MonoBehaviour:
   _wheelObject: {fileID: 5728237260940338922, guid: c40e85d2acee644449b8865b78f2c4f7, type: 3}
   _mass: 50
   _radius: 0.35
+  _TCSStrength: 1
+  _breakForce: 1000
   _groundMaterials:
     _asphalt:
       _physicsMaterial: {fileID: 13400000, guid: 41833a0b67a544a478c3d313df0fe504, type: 2}
-      _forwardStiffness: 1.2
-      _sidewaysStiffness: 1.2
+      _forwardStiffness: 1.4
+      _sidewaysStiffness: 1.4
       _forwardSlip: 0.25
       _sidewaysSlip: 0.25
       _volume: 0.5
