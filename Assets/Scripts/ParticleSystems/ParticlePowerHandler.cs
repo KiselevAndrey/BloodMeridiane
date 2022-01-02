@@ -3,7 +3,7 @@ using UnityEngine;
 namespace BloodMeridiane.ParticleSystems
 {
     [RequireComponent(typeof(ParticleSystem))]
-    public class ParticlePowerHandler : MonoBehaviour
+    public class ParticlePowerHandler : MonoBehaviour, Utility.IPowered
     {
         [SerializeField, Min(0)] private int _minParticleEmission;
         [SerializeField, Min(0)] private int _maxParticleEmission;

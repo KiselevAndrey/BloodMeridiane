@@ -1606,7 +1606,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _smooth: 0.3
-  _distance: 5
+  _minDistance: 1
+  _maxDistance: 10
   _height: 1
   _angle: 20
   _lineOfSightMask:
@@ -22903,6 +22904,8 @@ MonoBehaviour:
     - 2.5
     LimitBackwardSpeed: 60
     LimitForwardSpeed: 220
+    _currentGear: 0
+    _gearType: 0
   acceleratingWheels:
   - {fileID: 3996419674384384041}
   - {fileID: 9142628333430250038}
@@ -22923,9 +22926,15 @@ MonoBehaviour:
   - {fileID: 2172121338013189274}
   speedMultiplier: 2.7
   rb: {fileID: 2015204394132876615}
+  _currentSpeed: 0
+  _brakeInput: 0
   Gear: 0
   _currentRPM: 0
   _fixedRpm: 0
+  _startedRpmInnacuracy: 0
+  _nextGearRPM: 0
+  _previousGearRpm: 0
+  _accelInput: 0
 --- !u!65 &2015204394132876614
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -62,11 +62,8 @@ namespace BloodMeridiane.Map
         [SerializeField] private float _forwardSlip = .25f;
         [SerializeField] private float _sidewaysSlip = .25f;
         //[SerializeField] private float _damp = 1f;
-        [Range(0f, 1f)] [SerializeField] private float _volume = 0.5f;
 		[SerializeField] private GameObject _slipParticles;
-		[SerializeField] private AudioClip _slipSound;
 		[SerializeField] private GameObject _moveParticles;
-		[SerializeField] private AudioClip _moveSound;
 
 		public PhysicMaterial PhysicsMaterial => _physicsMaterial;
 		public float ForwardStiffness => _forwardStiffness;
@@ -74,11 +71,8 @@ namespace BloodMeridiane.Map
         public float ForwardSlip => _forwardSlip;
         public float SidewaysSlip => _sidewaysSlip;
 		//public float Damp = 1f;
-		public float Volume => _volume;
 		public GameObject SlipParticles => _slipParticles;
-		public AudioClip SlipSound => _slipSound;
 		public GameObject Particles => _moveParticles;
-		public AudioClip Sound => _moveSound;
 	}
 
 

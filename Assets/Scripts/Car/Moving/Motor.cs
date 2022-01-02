@@ -16,8 +16,11 @@ namespace BloodMeridiane.Car.Moving
         [SerializeField, Range(0.1f, 0.95f)] private float _rpmPercentAtMaxForce = 0.7f;
         [SerializeField, Range(0.5f, 1f)] private float _forcePercentAtMaxRpm= 0.7f;
 
+        [Header("References")]
+        [SerializeField] private Utility.PowersHandler _soundPowerHandler;
 
-        [SerializeField] private AnimationCurve _engineTorqueCurve;
+
+        private AnimationCurve _engineTorqueCurve;
         private AnimationCurve _fuelConsumptionCurve;
 
         private float _currentRPM;
@@ -63,6 +66,16 @@ namespace BloodMeridiane.Car.Moving
             // Вектор сглаживается некоторой пружинно-демпферной функцией, которая никогда не проскочит.
             // Чаще всего используется для сглаживания следящей камеры.
             RPM = Mathf.SmoothDamp(RPM, targetRpm, ref velocity, _engineInertia);
+        }
+
+        internal void Update()
+        {
+            UpdateSounds();
+        }
+
+        private void UpdateSounds()
+        {
+            _soundPowerHandler.SetPower(_currentRPM / _maxRpm);
         }
     }
 }

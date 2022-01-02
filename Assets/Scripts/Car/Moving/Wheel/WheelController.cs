@@ -22,7 +22,7 @@ namespace BloodMeridiane.Car.Moving.Wheels
         private WheelHit _wheelHit;
         private WheelsSO _wheelsSO;
         private GroundMaterial _groundMaterial;
-        private SlipVisualHandler _slipHandler;
+        private Utility.PowersHandler _slipHandler;
 
         private float _calculatedSpeed;
 
@@ -88,6 +88,8 @@ namespace BloodMeridiane.Car.Moving.Wheels
 
         private void UpdateSlipVisual()
         {
+            if (_slipHandler == null) return;
+
             _slipHandler.transform.position = _wheelHit.point;
             _slipHandler.SetPower(Mathf.Max(Mathf.Abs(_wheelHit.forwardSlip) - _groundMaterial.ForwardSlip, Mathf.Abs(_wheelHit.sidewaysSlip) - _groundMaterial.SidewaysSlip) * IsGrounded.ToInt());
         }
@@ -164,7 +166,7 @@ namespace BloodMeridiane.Car.Moving.Wheels
 
             if (_groundMaterial.SlipParticles)
             {
-                _slipHandler = Instantiate(_groundMaterial.SlipParticles, transform).GetComponent<SlipVisualHandler>();
+                _slipHandler = Instantiate(_groundMaterial.SlipParticles, transform).GetComponent<Utility.PowersHandler>();
                 _slipHandler.SetPower(0);
             }
         }

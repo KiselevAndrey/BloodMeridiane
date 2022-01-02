@@ -6,12 +6,6 @@ namespace BloodMeridiane.Car
 {
     public class CarVisualisator : MonoBehaviour
     {
-        [Header("Axis")]
-        [SerializeField] private float _verticalAxis;
-        [SerializeField] private float _speedSign;
-        [SerializeField] private float _horizontalAxis;
-        [SerializeField] private float _breakAxis;
-        [Space()]
         [SerializeField] private float _calculatedSpeed;
         [SerializeField] private float _controlWheelSpeed;
         //[SerializeField] private float _speedDifference;
@@ -43,11 +37,6 @@ namespace BloodMeridiane.Car
             _gearName = _car.GearBox.GearName;
             _targetSpeed = _car.GearBox.Gear.TargetSpeedForNextGear;
             //_speedDifference = Mathf.Clamp((Mathf.Abs(_wheelsSpeed) - _speed) / _speed, 0, 0.9f);
-
-            _verticalAxis = _car._verticalAxis.Sign();
-            _speedSign = _controlWheelSpeed.Sign();
-            _horizontalAxis = _car._steerAxis;
-            _breakAxis = _car._breakAxis;
 
             _gearBoxMultiplier = _car.GearBox.GearMultiplier;
         }
