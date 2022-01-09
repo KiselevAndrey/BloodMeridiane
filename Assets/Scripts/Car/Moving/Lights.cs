@@ -2,12 +2,13 @@ using UnityEngine;
 
 namespace BloodMeridiane.Car.Moving
 {
-    public class Lights : MonoBehaviour
+    [System.Serializable]
+    public class Lights
     {
         [SerializeField] private GameObject _breakLigths;
         [SerializeField] private GameObject _reverceLights;
 
-        private void Start()
+        public void Start()
         {
             EnableBreakLights(false);
             EnableReverceLigths(false);

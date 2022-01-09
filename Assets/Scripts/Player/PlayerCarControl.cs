@@ -1,17 +1,11 @@
 using BloodMeridiane.Camera;
 using BloodMeridiane.Car.Moving;
+using BloodMeridiane.Utility;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace BloodMeridiane.Player.Control
 {
-    public static class InputAxis
-    {
-        public const string Horizontal = nameof(Horizontal);
-        public const string Vertical = nameof(Vertical);
-        public const string Jump = nameof(Jump);
-    }
-
     [RequireComponent(typeof(CameraTarget))]
     public class PlayerCarControl : MonoBehaviour
     {

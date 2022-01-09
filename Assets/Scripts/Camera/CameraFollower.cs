@@ -1,20 +1,28 @@
+using BloodMeridiane.Utility;
 using UnityEngine;
 
 namespace BloodMeridiane.Camera
 {
     public class CameraFollower : MonoBehaviour
     {
-        [SerializeField] private float _smooth = 0.3f;
-        [SerializeField, Min(0)] private float _minDistance = 1.0f;
-        [SerializeField, Min(0)] private float _maxDistance = 10.0f;
-        [SerializeField] private float _height = 1.0f;
-        [SerializeField] private float _angle = 20;
+        [Header("Rotation Parameters")]
+        [SerializeField, Min(0)] private float _rotateSpeed = 5f;
+        [SerializeField, Range(-90, 0)] private float _minAngleX = -70;
+        [SerializeField, Range(0, 90)] private float _maxAngleX = 80;
+        [Header("Scroll Parameters")]
+        [SerializeField, Range(0, 5)] private float _minDistance = 1.0f;
+        [SerializeField, Range(5, 20)] private float _maxDistance = 10.0f;
+        [SerializeField, Min(0)] private float _scrollSpeed = 5f;
+
+        [Header("Anothers Parameters")]
         [SerializeField] private LayerMask _lineOfSightMask;
 
         private CameraTarget _target;
+        private UnityEngine.Camera _camera;
 
-        private float _yVelocity = 0.0f;
-        private float _distance;
+        private float _oldCameraDistance;
+        private float _xAngle;
+        private float _yAngle;
 
         private void Awake()
         {
@@ -34,41 +42,68 @@ namespace BloodMeridiane.Camera
                 Debug.Log("Camera Target not found!");
                 Destroy(this);
             }
+
+            _camera = GetComponentInChildren<UnityEngine.Camera>();
         }
 
         private void Start()
         {
-            _distance = Mathf.Lerp(_minDistance, _maxDistance, 0.5f);
+            _oldCameraDistance = Mathf.Lerp(_minDistance, _maxDistance, 0.5f);
+            Cursor.lockState = CursorLockMode.Locked;
+
+            _xAngle = transform.eulerAngles.x;
+            _yAngle = transform.eulerAngles.y;
         }
 
         private void LateUpdate()
         {
+            transform.position = _target.transform.position + new Vector3(0, _target.CameraUpDistance, 0);
+            Rotate();
+            ChangeCameraDistance();
+        }
 
-            // Damp angle from current y-angle towards target y-angle
+        private void Rotate()
+        {
+            float mouseX = Input.GetAxis(InputAxis.MouseX);
+            float mouseY = Input.GetAxis(InputAxis.MouseY);
 
-            //float xAngle = Mathf.SmoothDampAngle(transform.eulerAngles.x, _target.transform.eulerAngles.x + Angle, ref _xVelocity, smooth);
+            if (mouseX != 0)
+            {
+                _xAngle = Mathf.Lerp(_xAngle, _xAngle - mouseY, _rotateSpeed * Time.deltaTime);
+                _xAngle = Mathf.Clamp(_xAngle, _minAngleX, _maxAngleX);
+            }
 
-            float yAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, _target.transform.eulerAngles.y, ref _yVelocity, _smooth);
+            if (mouseY != 0)
+            {
+                _yAngle = Mathf.Lerp(_yAngle, _yAngle + mouseX, _rotateSpeed * Time.deltaTime);
+            }
 
             // Look at the target
-            transform.eulerAngles = new Vector3(_angle, yAngle, 0.0f);
+            transform.eulerAngles = new Vector3(_xAngle, _yAngle, 0.0f);
+        }
+
+        private void ChangeCameraDistance()
+        {
+            float scroll = Input.GetAxis(InputAxis.MouseScrollWheel);
+
+            if(scroll != 0)
+            {
+                _oldCameraDistance = Mathf.Lerp(_oldCameraDistance, _oldCameraDistance - scroll * _scrollSpeed, Time.deltaTime);
+                _oldCameraDistance = Mathf.Clamp(_oldCameraDistance, _minDistance, _maxDistance);
+            }
 
             var direction = transform.rotation * -Vector3.forward;
-            var targetDistance = AdjustLineOfSight(_target.transform.position + new Vector3(0, _height, 0), direction);
+            var cameraDistance = AdjustLineOfSight(transform.position, direction);
 
-
-            transform.position = _target.transform.position + new Vector3(0, _height, 0) + direction * targetDistance;
-
+            _camera.transform.position = transform.position + direction * cameraDistance;
         }
 
         private float AdjustLineOfSight(Vector3 target, Vector3 direction)
         {
-            RaycastHit hit;
-
-            if (Physics.Raycast(target, direction, out hit, _distance, _lineOfSightMask.value))
-                return hit.distance;
+            if (Physics.Raycast(target, direction, out RaycastHit hit, _oldCameraDistance, _lineOfSightMask.value))
+                return hit.distance - 0.1f;
             else
-                return _distance;
+                return _oldCameraDistance;
         }
     }
 }

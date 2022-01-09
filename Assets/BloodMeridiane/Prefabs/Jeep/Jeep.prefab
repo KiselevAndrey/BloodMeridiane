@@ -174,7 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaa88ba081d1ceb4ab1620e7f9a446a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minPitch: 0.5
+  _minPitch: 0.3
   _maxPitch: 3
 --- !u!114 &318987544
 MonoBehaviour:
@@ -189,7 +189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _minVolume: 1
-  _maxVolume: 0
+  _maxVolume: 0.3
   _maxVolumBoost: 0.1
 --- !u!1 &347725973
 GameObject:
@@ -988,7 +988,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1773533465}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 318987541}
@@ -2788,7 +2788,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3490508465602871397}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: ac64b0c15a21f5d4489fc3000f09d089, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
@@ -3790,7 +3790,6 @@ GameObject:
   - component: {fileID: 3490508465602871416}
   - component: {fileID: 3490508465602871398}
   - component: {fileID: 2022411291039394807}
-  - component: {fileID: 818728112640726224}
   m_Layer: 0
   m_Name: Jeep
   m_TagString: Untagged
@@ -3866,6 +3865,9 @@ MonoBehaviour:
     _forcePercentAtMaxRpm: 0.7
     _soundPowerHandler: {fileID: 1773533467}
   GearBox: {fileID: 3490508465602871404}
+  _lights:
+    _breakLigths: {fileID: 1840503258}
+    _reverceLights: {fileID: 1812425095}
   _velocityMultiplier: 3.6
   _verticalAxis: 0
   _steerAxis: 0
@@ -3932,6 +3934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1139ea94de65364aabfecf498b4c1d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cameraUpDistance: 1
 --- !u!114 &2022411291039394807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3946,20 +3949,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _centerOfMass: {fileID: 257649585503427189}
   _drawGizmos: 0
---- !u!114 &818728112640726224
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3490508465602871423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74e8e2fa28615624598043c735db432f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _breakLigths: {fileID: 1840503258}
-  _reverceLights: {fileID: 1812425095}
 --- !u!1 &5028215163098595633
 GameObject:
   m_ObjectHideFlags: 0

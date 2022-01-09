@@ -12,12 +12,12 @@ namespace BloodMeridiane.Car.Moving
         [SerializeField] public Wheels.Wheels Wheels;
         [Space(), SerializeField] public Motor Motor;
         [HideInInspector] public GearBox GearBox;
+        [Space(), SerializeField] private Lights _lights;
 
         [Space(), Header("Parameters")]
         [SerializeField, Min(1)] private float _velocityMultiplier = 3.6f;
 
         private ControlWheel _controlWheel;
-        private Lights _lights;
 
         public float _verticalAxis, _steerAxis, _breakAxis;
         private bool _isBreaking;
@@ -35,13 +35,13 @@ namespace BloodMeridiane.Car.Moving
 
             GearBox = GetComponent<GearBox>();
             _controlWheel = GetComponentInChildren<ControlWheel>();
-            _lights = GetComponent<Lights>();
         }
 
         private void Start()
         {
             OnChangedParameters();
             Wheels.InitWheels();
+            _lights.Start();
         }
 
         private void FixedUpdate()
@@ -105,7 +105,7 @@ namespace BloodMeridiane.Car.Moving
 
         private void LightsUpdate()
         {
-            _lights.EnableBreakLights(Wheels.IsBreaking);
+            _lights.EnableBreakLights(Wheels.IsBreaking || ControlWheelSpeed == 0);
             _lights.EnableReverceLigths(GearBox.GearName == GearNames.R.ToString());
         }
         #endregion
