@@ -77,7 +77,8 @@ namespace BloodMeridiane.Car.Moving
 
         private void GearUpdate()
         {
-            GearBox.CheckGears(_verticalAxis, ControlWheelSpeed, Motor.RPM);
+            if(_controlWheel.IsGrounded)
+                GearBox.CheckGears(_verticalAxis, ControlWheelSpeed, Motor.RPM);
         }
 
         private void EngineUpdate()
@@ -85,7 +86,7 @@ namespace BloodMeridiane.Car.Moving
             if (GearBox.GearName == nameof(GearNames.N)) Motor.CalculateRPM();
             else Motor.CalculateRPM(Mathf.Abs(CalculatedPoweredWheelSpeed) * Motor.MaxRPM / GearBox.Gear.MaxSpeed);
 
-            Motor.Update();
+            Motor.Update(_verticalAxis);
         }
 
         private void WheelsUpdate()

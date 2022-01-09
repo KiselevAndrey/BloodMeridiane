@@ -8,8 +8,8 @@ namespace BloodMeridiane.Car.Moving.Wheels
         protected WheelCollider Collider;
 
         public float RPM => Collider.rpm;
-
         public virtual float Speed => RPM * Collider.radius * Mathf.PI / 30;
+        public bool IsGrounded => Collider.isGrounded;
 
         protected virtual void Awake()
         {

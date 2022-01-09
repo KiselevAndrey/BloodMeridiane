@@ -5,8 +5,8 @@ namespace BloodMeridiane.ParticleSystems
     [RequireComponent(typeof(ParticleSystem))]
     public class ParticlePowerHandler : MonoBehaviour, Utility.IPowered
     {
-        [SerializeField, Min(0)] private int _minParticleEmission;
-        [SerializeField, Min(0)] private int _maxParticleEmission;
+        [SerializeField] private int _minParticleEmission;
+        [SerializeField] private int _maxParticleEmission;
 
         private ParticleSystem _particleSystem;
 

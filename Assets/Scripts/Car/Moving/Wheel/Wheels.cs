@@ -13,7 +13,7 @@ namespace BloodMeridiane.Car.Moving.Wheels
 
         [Header("Parameters")]
         [SerializeField, Range(1, 45)] private float _maxSteerAngle = 40f;
-        [SerializeField, Range(1, 5)] private float _highSpeedSteerAngle = 5f;
+        [SerializeField, Range(1, 45)] private float _highSpeedSteerAngle = 5f;
 
         private List<WheelController> _wheels = new List<WheelController>();
 

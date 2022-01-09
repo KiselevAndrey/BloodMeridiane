@@ -18,7 +18,7 @@ namespace BloodMeridiane.Car.Moving
 
         [Header("References")]
         [SerializeField] private Utility.PowersHandler _soundPowerHandler;
-
+        [SerializeField] private Utility.PowersHandler _exhaustPowerHandler;
 
         private AnimationCurve _engineTorqueCurve;
         private AnimationCurve _fuelConsumptionCurve;
@@ -68,14 +68,23 @@ namespace BloodMeridiane.Car.Moving
             RPM = Mathf.SmoothDamp(RPM, targetRpm, ref velocity, _engineInertia);
         }
 
-        internal void Update()
+        public void Update(float verticalAxis)
         {
-            UpdateSounds();
+            float rpmParts = _currentRPM / _maxRpm;
+            float absVerticalAxis = Mathf.Abs(verticalAxis);
+
+            UpdateSounds(rpmParts, absVerticalAxis);
+            UpdateExhaust(rpmParts, absVerticalAxis);
         }
 
-        private void UpdateSounds()
+        private void UpdateSounds(float rpmParts, float absVerticalAxis)
         {
-            _soundPowerHandler.SetPower(_currentRPM / _maxRpm);
+            _soundPowerHandler.SetPower(rpmParts * 0.8f + absVerticalAxis * 0.2f);
+        }
+
+        private void UpdateExhaust(float rpmParts, float absVerticalAxis)
+        {
+            _exhaustPowerHandler.SetPower(rpmParts * absVerticalAxis);
         }
     }
 }
