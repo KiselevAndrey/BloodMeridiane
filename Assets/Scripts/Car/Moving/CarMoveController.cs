@@ -7,7 +7,7 @@ namespace BloodMeridiane.Car.Moving
     [RequireComponent(typeof(GearBox))]
     [RequireComponent(typeof(Lights))]
     public class CarMoveController : SimpleCarMoveController,
-        ICarMoveController
+        ICarMoveController, IDisplayedSpeed
     {
         [SerializeField] public Wheels.Wheels Wheels;
         [Space(), SerializeField] public Motor Motor;
@@ -83,7 +83,14 @@ namespace BloodMeridiane.Car.Moving
 
         private void EngineUpdate()
         {
-            if (GearBox.GearName == nameof(GearNames.N)) Motor.CalculateRPM();
+            if (GearBox.GearName == nameof(GearNames.N))
+            {
+                if (_verticalAxis == 0 ||
+                    (_controlWheel.IsGrounded && _breakAxis == 0))
+                    Motor.CalculateRPM();
+                else
+                    Motor.CalculateRPM(Motor.MaxRPM);
+            }
             else Motor.CalculateRPM(Mathf.Abs(CalculatedPoweredWheelSpeed) * Motor.MaxRPM / GearBox.Gear.MaxSpeed);
 
             Motor.Update(_verticalAxis);
@@ -114,11 +121,11 @@ namespace BloodMeridiane.Car.Moving
         #region Inputs
         public override void ApplyForce(float verticalAxis)
         {
-            if (_breakAxis != 0)
-            {
-                _verticalAxis = 0f;
-                return;
-            }
+            //if (_breakAxis != 0)
+            //{
+            //    _verticalAxis = 0f;
+            //    return;
+            //}
 
             _verticalAxis = Mathf.Clamp(verticalAxis, -1f, 1f);
 
