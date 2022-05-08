@@ -27,7 +27,6 @@ namespace BloodMeridiane.Car.Moving.Wheels
         private float _calculatedSpeed;
 
         #region Properties
-        public bool IsGrounded { get; private set; }
         public bool IsBraking { get; private set; }
         public bool CanPower => _canPower;
         public bool CanBreak=> _canBrake;
@@ -66,7 +65,7 @@ namespace BloodMeridiane.Car.Moving.Wheels
         #region Update
         public void UpdateParameters()
         {
-            IsGrounded = Collider.GetGroundHit(out _wheelHit);
+            Collider.GetGroundHit(out _wheelHit);
 
             if (IsGrounded)
             {
@@ -91,7 +90,10 @@ namespace BloodMeridiane.Car.Moving.Wheels
             if (_slipHandler == null) return;
 
             _slipHandler.transform.position = _wheelHit.point;
-            _slipHandler.SetPower(Mathf.Max(Mathf.Abs(_wheelHit.forwardSlip) - _groundMaterial.ForwardSlip, Mathf.Abs(_wheelHit.sidewaysSlip) - _groundMaterial.SidewaysSlip) * IsGrounded.ToInt());
+            if (Mathf.Abs(RPM) >= 10 || RPM == 0)
+                _slipHandler.SetPower(Mathf.Max(Mathf.Abs(_wheelHit.forwardSlip) - _groundMaterial.ForwardSlip, Mathf.Abs(_wheelHit.sidewaysSlip) - _groundMaterial.SidewaysSlip) * IsGrounded.ToInt());
+            else
+                _slipHandler.SetPower(0);
         }
 
         private void UpdateMoveVisual()

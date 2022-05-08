@@ -3964,13 +3964,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _totalGears: 5
   _maxSpeed: 150
-  _finalGearRatio: 3.23
+  _finalGearRatio: 1
   _gearShiftingThreshold: 0.75
   _gearShiftingDelay: 0.4
   _chanceOfJamming: 0
   _jammingTimeMultiplied: 3.73
-  _gearShiftUpRpmPercent: 0.64
-  _gearShiftDownRpmPercent: 0.35
+  _gearShiftUpRpmPercent: 0.8
+  _gearShiftDownRpmPercent: 0.5
   _neutralBorderSpeed: 0.01
 --- !u!54 &3490508465602871396
 Rigidbody:

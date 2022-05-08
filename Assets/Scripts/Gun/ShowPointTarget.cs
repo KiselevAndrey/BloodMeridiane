@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BloodMeridiane.Gun.Show
+namespace BloodMeridiane.Guns.Show
 {
     public class ShowPointTarget : MonoBehaviour
     {

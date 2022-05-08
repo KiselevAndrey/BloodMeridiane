@@ -79,7 +79,7 @@ namespace BloodMeridiane.Car.Moving
 
         private void UpdateSounds(float rpmParts, float absVerticalAxis)
         {
-            _soundPowerHandler.SetPower(rpmParts * 0.8f + absVerticalAxis * 0.2f);
+            _soundPowerHandler.SetPower(rpmParts * 0.7f + absVerticalAxis * 0.3f);
         }
 
         private void UpdateExhaust(float rpmParts, float absVerticalAxis)
